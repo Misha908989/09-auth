@@ -24,8 +24,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
     if (isAxiosError(error)) {
       logErrorResponse(error.response?.data);
       return NextResponse.json(
-        { error: error.response?.data?.error, response: error.response?.data },
-        { status: error.response?.status }
+        { error: error.message },
+        { status: error.status }
       );
     }
     logErrorResponse({ message: (error as Error).message });
@@ -49,8 +49,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     if (isAxiosError(error)) {
       logErrorResponse(error.response?.data);
       return NextResponse.json(
-        { error: error.response?.data?.error, response: error.response?.data },
-        { status: error.response?.status }
+        { error: error.message },
+        { status: error.status }
       );
     }
     logErrorResponse({ message: (error as Error).message });
@@ -73,8 +73,8 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     if (isAxiosError(error)) {
       logErrorResponse(error.response?.data);
       return NextResponse.json(
-        { error: error.response?.data?.error, response: error.response?.data },
-        { status: error.response?.status }
+        { error: error.message },
+        { status: error.status }
       );
     }
     logErrorResponse({ message: (error as Error).message });

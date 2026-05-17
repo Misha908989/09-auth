@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const cookieStore = await cookies();
   const { searchParams } = req.nextUrl;
   const page = searchParams.get("page") ?? "1";
-  const perPage = searchParams.get("perPage") ?? "12";
+  const perPage = "12";
   const search = searchParams.get("search") ?? "";
   const tag = searchParams.get("tag") ?? "";
 
@@ -32,8 +32,8 @@ export async function GET(req: NextRequest) {
     if (isAxiosError(error)) {
       logErrorResponse(error.response?.data);
       return NextResponse.json(
-        { error: error.response?.data?.error, response: error.response?.data },
-        { status: error.response?.status || 500 }
+        { error: error.message },
+        { status: error.status || 500 }
       );
     }
     logErrorResponse({ message: (error as Error).message });
@@ -58,8 +58,8 @@ export async function POST(req: NextRequest) {
     if (isAxiosError(error)) {
       logErrorResponse(error.response?.data);
       return NextResponse.json(
-        { error: error.response?.data?.error, response: error.response?.data },
-        { status: error.response?.status || 500 }
+        { error: error.message },
+        { status: error.status || 500 }
       );
     }
     logErrorResponse({ message: (error as Error).message });
