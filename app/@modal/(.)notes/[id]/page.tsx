@@ -24,9 +24,7 @@ export default async function InterceptedNotePage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Modal>
-        <NotePreviewClient id={id} />
-      </Modal>
+      <NotePreviewClient id={id} />
     </HydrationBoundary>
   );
 }
