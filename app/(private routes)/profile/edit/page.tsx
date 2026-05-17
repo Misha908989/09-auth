@@ -56,7 +56,7 @@ export default function EditProfilePage() {
           <p>Email: {email}</p>
           <div className={css.actions}>
             <button type="submit" className={css.saveButton}>Save</button>
-            <button type="button" className={css.cancelButton} onClick={() => router.push("/profile")}>
+            <button type="button" className={css.cancelButton} onClick={() => router.back()}>
               Cancel
             </button>
           </div>

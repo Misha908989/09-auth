@@ -1,7 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { fetchNoteById } from "@/lib/api";
+import { fetchNoteById } from "@/lib/api/clientApi";
+import Modal from "@/components/Modal/Modal";
 import css from "./interceptedNote.module.css";
 
 interface NotePreviewClientProps {
@@ -9,6 +11,8 @@ interface NotePreviewClientProps {
 }
 
 export default function NotePreviewClient({ id }: NotePreviewClientProps) {
+  const router = useRouter();
+
   const { data: note, isLoading, isError } = useQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
@@ -20,19 +24,21 @@ export default function NotePreviewClient({ id }: NotePreviewClientProps) {
   if (isError || !note) return <p>Something went wrong.</p>;
 
   return (
-    <div className={css.item}>
-      <div className={css.header}>
-        <h2>{note.title}</h2>
+    <Modal onClose={() => router.back()}>
+      <div className={css.item}>
+        <div className={css.header}>
+          <h2>{note.title}</h2>
+        </div>
+        <p className={css.tag}>{note.tag}</p>
+        <p className={css.content}>{note.content}</p>
+        <p className={css.date}>
+          {new Date(note.createdAt).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+        </p>
       </div>
-      <p className={css.tag}>{note.tag}</p>
-      <p className={css.content}>{note.content}</p>
-      <p className={css.date}>
-        {new Date(note.createdAt).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })}
-      </p>
-    </div>
+    </Modal>
   );
 }
