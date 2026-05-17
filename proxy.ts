@@ -15,11 +15,12 @@ export async function middleware(req: NextRequest) {
 
   if (isPrivate || isAuth) {
     let isAuthenticated = !!accessToken;
+    let sessionResponse = null;
 
     if (!accessToken && refreshToken) {
       try {
-        const response = await checkSession();
-        isAuthenticated = !!response?.data;
+        sessionResponse = await checkSession();
+        isAuthenticated = !!sessionResponse?.data;
       } catch {
         isAuthenticated = false;
       }
@@ -31,6 +32,19 @@ export async function middleware(req: NextRequest) {
 
     if (isAuth && isAuthenticated) {
       return NextResponse.redirect(new URL("/profile", req.url));
+    }
+
+    // Propagate new cookies from session refresh to the client
+    if (sessionResponse) {
+      const res = NextResponse.next();
+      const setCookie = sessionResponse.headers["set-cookie"];
+      if (setCookie) {
+        const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
+        cookieArray.forEach((cookie: string) => {
+          res.headers.append("Set-Cookie", cookie);
+        });
+      }
+      return res;
     }
   }
 

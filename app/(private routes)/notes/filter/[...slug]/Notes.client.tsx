@@ -47,13 +47,16 @@ export default function NotesClient({ tag }: NotesClientProps) {
         </Link>
       </div>
 
-      {data && data.notes.length > 0 && <NoteList notes={data.notes} />}
-
-      <Pagination
-        currentPage={page}
-        totalPages={data?.totalPages ?? 1}
-        onPageChange={setPage}
-      />
+      {data && data.notes.length > 0 && (
+        <>
+          <NoteList notes={data.notes} />
+          <Pagination
+            currentPage={page}
+            totalPages={data.totalPages}
+            onPageChange={setPage}
+          />
+        </>
+      )}
     </div>
   );
 }

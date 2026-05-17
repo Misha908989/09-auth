@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import axios from "axios";
-import { api } from "@/app/api/api";
+import { isAxiosError } from "axios";
+import api from "@/app/api/api";
 
 function logErrorResponse(error: unknown) {
-  if (axios.isAxiosError(error)) {
-    console.error("Error response:", error.response?.data);
+  if (isAxiosError(error)) {
+    console.error("Error:", error.message, error.response?.data);
   }
 }
 
@@ -14,22 +14,19 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const cookieStore = await cookies();
-  const cookieHeader = cookieStore.getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join("; ");
   const { id } = await params;
 
   try {
-    const response = await api.get(`/api/notes/${id}`, {
-      headers: { Cookie: cookieHeader },
+    const response = await api.get(`/notes/${id}`, {
+      headers: { Cookie: cookieStore.toString() },
     });
-    return NextResponse.json(response.data);
+    return NextResponse.json(response.data, { status: response.status });
   } catch (error: unknown) {
     logErrorResponse(error);
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
       return NextResponse.json(
-        { message: error.response?.data?.message || "Failed to fetch note" },
-        { status: error.response?.status || 500 }
+        { message: error.message, data: error.response?.data },
+        { status: error.status ?? 500 }
       );
     }
     return NextResponse.json({ message: "Failed to fetch note" }, { status: 500 });
@@ -41,23 +38,20 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const cookieStore = await cookies();
-  const cookieHeader = cookieStore.getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join("; ");
   const { id } = await params;
   const body = await req.json();
 
   try {
-    const response = await api.patch(`/api/notes/${id}`, body, {
-      headers: { Cookie: cookieHeader },
+    const response = await api.patch(`/notes/${id}`, body, {
+      headers: { Cookie: cookieStore.toString() },
     });
-    return NextResponse.json(response.data);
+    return NextResponse.json(response.data, { status: response.status });
   } catch (error: unknown) {
     logErrorResponse(error);
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
       return NextResponse.json(
-        { message: error.response?.data?.message || "Failed to update note" },
-        { status: error.response?.status || 500 }
+        { message: error.message, data: error.response?.data },
+        { status: error.status ?? 500 }
       );
     }
     return NextResponse.json({ message: "Failed to update note" }, { status: 500 });
@@ -69,22 +63,19 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const cookieStore = await cookies();
-  const cookieHeader = cookieStore.getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join("; ");
   const { id } = await params;
 
   try {
-    const response = await api.delete(`/api/notes/${id}`, {
-      headers: { Cookie: cookieHeader },
+    const response = await api.delete(`/notes/${id}`, {
+      headers: { Cookie: cookieStore.toString() },
     });
-    return NextResponse.json(response.data);
+    return NextResponse.json(response.data, { status: response.status });
   } catch (error: unknown) {
     logErrorResponse(error);
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
       return NextResponse.json(
-        { message: error.response?.data?.message || "Failed to delete note" },
-        { status: error.response?.status || 500 }
+        { message: error.message, data: error.response?.data },
+        { status: error.status ?? 500 }
       );
     }
     return NextResponse.json({ message: "Failed to delete note" }, { status: 500 });

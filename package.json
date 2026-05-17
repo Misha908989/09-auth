@@ -20,13 +20,15 @@
     "react-paginate": "^8.3.0",
     "use-debounce": "^10.1.1",
     "yup": "^1.7.1",
-    "zustand": "^5.0.13"
+    "zustand": "^5.0.13",
+    "cookie": "^0.7.0"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-paginate": "^7.1.4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@types/cookie": "^0.6.0"
   }
 }
