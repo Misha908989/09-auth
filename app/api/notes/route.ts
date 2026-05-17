@@ -1,35 +1,42 @@
-import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { isAxiosError } from "axios";
-import { api, logErrorResponse } from "@/app/api/api";
+import { NextRequest, NextResponse } from "next/server";
+import { api } from "@/app/api/api";
+
+function logErrorResponse(data: unknown): void {
+  console.error(data);
+}
 
 export async function GET(req: NextRequest) {
   const cookieStore = await cookies();
-  const { searchParams } = new URL(req.url);
-
+  const { searchParams } = req.nextUrl;
   const page = searchParams.get("page") ?? "1";
-  const perPage = "12";
+  const perPage = searchParams.get("perPage") ?? "12";
   const search = searchParams.get("search") ?? "";
-  const tag = searchParams.get("tag");
-
-  const params: Record<string, string> = { page, perPage };
-  if (search) params.search = search;
-  if (tag && tag !== "All") params.tag = tag;
+  const tag = searchParams.get("tag") ?? "";
 
   try {
+    const params: Record<string, string> = { page, perPage };
+    if (search) params.search = search;
+    if (tag && tag !== "All") params.tag = tag;
+
     const response = await api.get("/notes", {
       params,
-      headers: { Cookie: cookieStore.toString() },
+      headers: {
+        Cookie: cookieStore.toString(),
+      },
     });
-    return NextResponse.json(response.data, { status: response.status });
-  } catch (error: unknown) {
-    logErrorResponse(error);
+
+    return NextResponse.json(response.data);
+  } catch (error) {
     if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
       return NextResponse.json(
-        { error: error.message, response: error.response?.data },
-        { status: error.status ?? 500 }
+        { error: error.response?.data?.error, response: error.response?.data },
+        { status: error.response?.status || 500 }
       );
     }
+    logErrorResponse({ message: (error as Error).message });
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -45,15 +52,17 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json",
       },
     });
-    return NextResponse.json(response.data, { status: response.status });
-  } catch (error: unknown) {
-    logErrorResponse(error);
+
+    return NextResponse.json(response.data);
+  } catch (error) {
     if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
       return NextResponse.json(
-        { error: error.message, response: error.response?.data },
-        { status: error.status ?? 500 }
+        { error: error.response?.data?.error, response: error.response?.data },
+        { status: error.response?.status || 500 }
       );
     }
+    logErrorResponse({ message: (error as Error).message });
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

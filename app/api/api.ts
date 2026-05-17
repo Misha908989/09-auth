@@ -1,14 +1,6 @@
-import axios, { isAxiosError } from "axios";
-
-const baseURL = process.env.NEXT_PUBLIC_API_URL;
+import axios from "axios";
 
 export const api = axios.create({
-  baseURL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
 });
-
-export function logErrorResponse(error: unknown) {
-  if (isAxiosError(error)) {
-    console.error("Error response:", error.response?.status, error.response?.data);
-  }
-}
