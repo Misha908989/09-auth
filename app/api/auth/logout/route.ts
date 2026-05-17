@@ -1,13 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { isAxiosError } from "axios";
-import { api } from "@/app/api/api";
-
-function logErrorResponse(error: unknown) {
-  if (isAxiosError(error)) {
-    console.error("Error:", error.message, error.response?.data);
-  }
-}
+import { api, logErrorResponse } from "@/app/api/api";
 
 export async function POST() {
   const cookieStore = await cookies();
@@ -29,6 +23,6 @@ export async function POST() {
         { status: error.status ?? 500 }
       );
     }
-    return NextResponse.json({ error: "Logout failed" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

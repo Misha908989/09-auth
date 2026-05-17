@@ -2,13 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { parse } from "cookie";
 import { isAxiosError } from "axios";
-import { api } from "@/app/api/api";
-
-function logErrorResponse(error: unknown) {
-  if (isAxiosError(error)) {
-    console.error("Error:", error.message, error.response?.data);
-  }
-}
+import { api, logErrorResponse } from "@/app/api/api";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -21,12 +15,22 @@ export async function POST(req: NextRequest) {
     if (setCookie) {
       const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
       cookieArray.forEach((cookieStr) => {
-        const [nameValue, expiresStr] = cookieStr.split(";");
-        const parsed = parse(nameValue.trim());
+        const parts = cookieStr.split(";").map((p: string) => p.trim());
+        const parsed = parse(parts[0]);
         const [name] = Object.keys(parsed);
         const value = parsed[name];
-        const expires = expiresStr ? new Date(expiresStr.split("=")[1]) : undefined;
-        cookieStore.set(name, value, { expires });
+        const options: Record<string, string | boolean | number | Date> = {};
+        parts.slice(1).forEach((attr: string) => {
+          const [k, v] = attr.split("=");
+          const key = k.trim().toLowerCase();
+          if (key === "path") options.path = v?.trim();
+          else if (key === "max-age") options.maxAge = parseInt(v);
+          else if (key === "expires") options.expires = new Date(v?.trim());
+          else if (key === "httponly") options.httpOnly = true;
+          else if (key === "samesite") options.sameSite = v?.trim() as "lax" | "strict" | "none";
+          else if (key === "secure") options.secure = true;
+        });
+        cookieStore.set(name, value, options as Parameters<typeof cookieStore.set>[2]);
       });
     }
 
@@ -39,6 +43,6 @@ export async function POST(req: NextRequest) {
         { status: error.status ?? 500 }
       );
     }
-    return NextResponse.json({ error: "Registration failed" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

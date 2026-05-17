@@ -11,7 +11,7 @@ export async function proxy(req: NextRequest) {
   const refreshToken = req.cookies.get("refreshToken")?.value;
 
   const isPrivate = PRIVATE_ROUTES.some((r) => pathname.startsWith(r));
-  const isAuth = AUTH_ROUTES.some((r) => pathname === r);
+  const isAuth = AUTH_ROUTES.some((r) => pathname === r || pathname.startsWith(r + "/"));
 
   if (isPrivate || isAuth) {
     let isAuthenticated = !!accessToken;
@@ -31,7 +31,7 @@ export async function proxy(req: NextRequest) {
     }
 
     if (isAuth && isAuthenticated) {
-      return NextResponse.redirect(new URL("/profile", req.url));
+      return NextResponse.redirect(new URL("/", req.url));
     }
 
     if (sessionResponse) {

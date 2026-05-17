@@ -1,15 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { isAxiosError } from "axios";
-import { api } from "@/app/api/api";
+import { api, logErrorResponse } from "@/app/api/api";
 
 export const dynamic = "force-dynamic";
-
-function logErrorResponse(error: unknown) {
-  if (isAxiosError(error)) {
-    console.error("Error:", error.message, error.response?.data);
-  }
-}
 
 export async function GET() {
   const cookieStore = await cookies();
@@ -27,7 +21,7 @@ export async function GET() {
         { status: error.status ?? 500 }
       );
     }
-    return NextResponse.json({ error: "Failed to fetch user" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
@@ -37,10 +31,7 @@ export async function PATCH(req: NextRequest) {
 
   try {
     const response = await api.patch("/users/me", body, {
-      headers: {
-        Cookie: cookieStore.toString(),
-        "Content-Type": "application/json",
-      },
+      headers: { Cookie: cookieStore.toString() },
     });
     return NextResponse.json(response.data, { status: response.status });
   } catch (error: unknown) {
@@ -51,6 +42,6 @@ export async function PATCH(req: NextRequest) {
         { status: error.status ?? 500 }
       );
     }
-    return NextResponse.json({ error: "Failed to update user" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

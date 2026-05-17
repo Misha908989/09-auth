@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { isAxiosError } from "axios";
-import { api } from "@/app/api/api";
-
-function logErrorResponse(error: unknown) {
-  if (isAxiosError(error)) {
-    console.error("Error:", error.message, error.response?.data);
-  }
-}
+import { api, logErrorResponse } from "@/app/api/api";
 
 export async function GET(
   _req: NextRequest,
@@ -29,7 +23,7 @@ export async function GET(
         { status: error.status ?? 500 }
       );
     }
-    return NextResponse.json({ error: "Failed to fetch note" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
@@ -43,10 +37,7 @@ export async function PATCH(
 
   try {
     const response = await api.patch(`/notes/${id}`, body, {
-      headers: {
-        Cookie: cookieStore.toString(),
-        "Content-Type": "application/json",
-      },
+      headers: { Cookie: cookieStore.toString() },
     });
     return NextResponse.json(response.data, { status: response.status });
   } catch (error: unknown) {
@@ -57,7 +48,7 @@ export async function PATCH(
         { status: error.status ?? 500 }
       );
     }
-    return NextResponse.json({ error: "Failed to update note" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
@@ -81,6 +72,6 @@ export async function DELETE(
         { status: error.status ?? 500 }
       );
     }
-    return NextResponse.json({ error: "Failed to delete note" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
