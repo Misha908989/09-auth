@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { isAxiosError } from "axios";
-import api from "@/app/api/api";
+import { api } from "@/app/api/api";
 
 export const dynamic = "force-dynamic";
 
@@ -23,11 +23,11 @@ export async function GET() {
     logErrorResponse(error);
     if (isAxiosError(error)) {
       return NextResponse.json(
-        { message: error.message, data: error.response?.data },
+        { error: error.message, response: error.response?.data },
         { status: error.status ?? 500 }
       );
     }
-    return NextResponse.json({ message: "Failed to fetch user" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch user" }, { status: 500 });
   }
 }
 
@@ -37,17 +37,20 @@ export async function PATCH(req: NextRequest) {
 
   try {
     const response = await api.patch("/users/me", body, {
-      headers: { Cookie: cookieStore.toString() },
+      headers: {
+        Cookie: cookieStore.toString(),
+        "Content-Type": "application/json",
+      },
     });
     return NextResponse.json(response.data, { status: response.status });
   } catch (error: unknown) {
     logErrorResponse(error);
     if (isAxiosError(error)) {
       return NextResponse.json(
-        { message: error.message, data: error.response?.data },
+        { error: error.message, response: error.response?.data },
         { status: error.status ?? 500 }
       );
     }
-    return NextResponse.json({ message: "Failed to update user" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to update user" }, { status: 500 });
   }
 }

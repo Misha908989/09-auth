@@ -4,7 +4,7 @@ import { checkSession } from "./lib/api/serverApi";
 const PRIVATE_ROUTES = ["/notes", "/profile"];
 const AUTH_ROUTES = ["/sign-in", "/sign-up"];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const accessToken = req.cookies.get("accessToken")?.value;
@@ -34,7 +34,6 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/profile", req.url));
     }
 
-    // Propagate new cookies from session refresh to the client
     if (sessionResponse) {
       const res = NextResponse.next();
       const setCookie = sessionResponse.headers["set-cookie"];

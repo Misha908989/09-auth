@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { isAxiosError } from "axios";
-import api from "@/app/api/api";
+import { api } from "@/app/api/api";
 
 function logErrorResponse(error: unknown) {
   if (isAxiosError(error)) {
@@ -25,11 +25,11 @@ export async function GET(
     logErrorResponse(error);
     if (isAxiosError(error)) {
       return NextResponse.json(
-        { message: error.message, data: error.response?.data },
+        { error: error.message, response: error.response?.data },
         { status: error.status ?? 500 }
       );
     }
-    return NextResponse.json({ message: "Failed to fetch note" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch note" }, { status: 500 });
   }
 }
 
@@ -43,18 +43,21 @@ export async function PATCH(
 
   try {
     const response = await api.patch(`/notes/${id}`, body, {
-      headers: { Cookie: cookieStore.toString() },
+      headers: {
+        Cookie: cookieStore.toString(),
+        "Content-Type": "application/json",
+      },
     });
     return NextResponse.json(response.data, { status: response.status });
   } catch (error: unknown) {
     logErrorResponse(error);
     if (isAxiosError(error)) {
       return NextResponse.json(
-        { message: error.message, data: error.response?.data },
+        { error: error.message, response: error.response?.data },
         { status: error.status ?? 500 }
       );
     }
-    return NextResponse.json({ message: "Failed to update note" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to update note" }, { status: 500 });
   }
 }
 
@@ -74,10 +77,10 @@ export async function DELETE(
     logErrorResponse(error);
     if (isAxiosError(error)) {
       return NextResponse.json(
-        { message: error.message, data: error.response?.data },
+        { error: error.message, response: error.response?.data },
         { status: error.status ?? 500 }
       );
     }
-    return NextResponse.json({ message: "Failed to delete note" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to delete note" }, { status: 500 });
   }
 }

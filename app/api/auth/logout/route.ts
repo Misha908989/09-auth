@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { isAxiosError } from "axios";
-import api from "@/app/api/api";
+import { api } from "@/app/api/api";
 
 function logErrorResponse(error: unknown) {
   if (isAxiosError(error)) {
@@ -25,10 +25,10 @@ export async function POST() {
     logErrorResponse(error);
     if (isAxiosError(error)) {
       return NextResponse.json(
-        { message: error.message, data: error.response?.data },
+        { error: error.message, response: error.response?.data },
         { status: error.status ?? 500 }
       );
     }
-    return NextResponse.json({ message: "Logout failed" }, { status: 500 });
+    return NextResponse.json({ error: "Logout failed" }, { status: 500 });
   }
 }

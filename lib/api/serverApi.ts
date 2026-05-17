@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { AxiosResponse } from "axios";
-import api from "@/app/api/api";
+import { api } from "@/app/api/api";
 import { Note } from "@/types/note";
 import { User } from "@/types/user";
 import { NotesResponse } from "./clientApi";
