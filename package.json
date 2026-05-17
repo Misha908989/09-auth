@@ -1,0 +1,32 @@
+{
+  "name": "notehub-09-auth",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.100.10",
+    "@tanstack/react-query-next-experimental": "^5.100.10",
+    "@types/js-cookie": "^3.0.6",
+    "axios": "^1.16.0",
+    "formik": "^2.4.9",
+    "js-cookie": "^3.0.7",
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-paginate": "^8.3.0",
+    "use-debounce": "^10.1.1",
+    "yup": "^1.7.1",
+    "zustand": "^5.0.13"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/react-paginate": "^7.1.4",
+    "typescript": "^5"
+  }
+}

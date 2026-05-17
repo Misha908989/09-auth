@@ -1,0 +1,38 @@
+.navigationItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navigationLink {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.navigationLink:hover {
+  color: #a78bfa;
+}
+
+.userEmail {
+  margin: 0;
+  color: #c4b5fd;
+  font-size: 0.85rem;
+}
+
+.logoutButton {
+  background: transparent;
+  border: 1px solid #7c3aed;
+  color: #a78bfa;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.logoutButton:hover {
+  background: #2d1b69;
+}
