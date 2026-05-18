@@ -1,11 +1,7 @@
 import { cookies } from "next/headers";
 import { isAxiosError } from "axios";
 import { NextRequest, NextResponse } from "next/server";
-import { api } from "@/app/api/api";
-
-function logErrorResponse(data: unknown): void {
-  console.error(data);
-}
+import { api, logErrorResponse } from "@/lib/api/api";
 
 export async function GET(req: NextRequest) {
   const cookieStore = await cookies();
@@ -22,21 +18,18 @@ export async function GET(req: NextRequest) {
 
     const response = await api.get("/notes", {
       params,
-      headers: {
-        Cookie: cookieStore.toString(),
-      },
+      headers: { Cookie: cookieStore.toString() },
     });
 
-    return NextResponse.json(response.data);
+    return NextResponse.json(response.data, { status: response.status });
   } catch (error) {
     if (isAxiosError(error)) {
-      logErrorResponse(error.response?.data);
+      logErrorResponse(error);
       return NextResponse.json(
-        { error: error.message },
-        { status: error.status || 500 }
+        { error: error.message, response: error.response?.data },
+        { status: error.response?.status || 500 }
       );
     }
-    logErrorResponse({ message: (error as Error).message });
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -53,16 +46,15 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json(response.data);
+    return NextResponse.json(response.data, { status: response.status });
   } catch (error) {
     if (isAxiosError(error)) {
-      logErrorResponse(error.response?.data);
+      logErrorResponse(error);
       return NextResponse.json(
-        { error: error.message },
-        { status: error.status || 500 }
+        { error: error.message, response: error.response?.data },
+        { status: error.response?.status || 500 }
       );
     }
-    logErrorResponse({ message: (error as Error).message });
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
