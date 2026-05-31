@@ -1,60 +1,66 @@
-import { cookies } from "next/headers";
-import { isAxiosError } from "axios";
-import { NextRequest, NextResponse } from "next/server";
-import { api, logErrorResponse } from "@/lib/api/api";
+import { NextRequest, NextResponse } from 'next/server';
+import { api } from '@/app/api/api';
+import { cookies } from 'next/headers';
+import { isAxiosError } from 'axios';
+import { logErrorResponse } from '@/app/api/_utils/utils';
 
-export async function GET(req: NextRequest) {
-  const cookieStore = await cookies();
-  const { searchParams } = req.nextUrl;
-  const page = searchParams.get("page") ?? "1";
-  const perPage = "12";
-  const search = searchParams.get("search") ?? "";
-  const tag = searchParams.get("tag") ?? "";
-
+export async function GET(request: NextRequest) {
   try {
-    const params: Record<string, string> = { page, perPage };
-    if (search) params.search = search;
-    if (tag && tag !== "All") params.tag = tag;
+    const cookieStore = await cookies();
+    const search = request.nextUrl.searchParams.get('search') ?? '';
+    const page = Number(request.nextUrl.searchParams.get('page') ?? 1);
+    const rawTag = request.nextUrl.searchParams.get('tag') ?? '';
+    const tag = rawTag === 'All' ? '' : rawTag;
 
-    const response = await api.get("/notes", {
-      params,
-      headers: { Cookie: cookieStore.toString() },
-    });
-
-    return NextResponse.json(response.data, { status: response.status });
-  } catch (error) {
-    if (isAxiosError(error)) {
-      logErrorResponse(error);
-      return NextResponse.json(
-        { error: error.message, response: error.response?.data },
-        { status: error.response?.status || 500 }
-      );
-    }
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}
-
-export async function POST(req: NextRequest) {
-  const cookieStore = await cookies();
-  const body = await req.json();
-
-  try {
-    const response = await api.post("/notes", body, {
+    const res = await api('/notes', {
+      params: {
+        ...(search !== '' && { search }),
+        page,
+        perPage: 12,
+        ...(tag && { tag }),
+      },
       headers: {
         Cookie: cookieStore.toString(),
-        "Content-Type": "application/json",
       },
     });
 
-    return NextResponse.json(response.data, { status: response.status });
+    return NextResponse.json(res.data, { status: res.status });
   } catch (error) {
     if (isAxiosError(error)) {
-      logErrorResponse(error);
+      logErrorResponse(error.response?.data);
       return NextResponse.json(
         { error: error.message, response: error.response?.data },
-        { status: error.response?.status || 500 }
+        { status: error.status }
       );
     }
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    logErrorResponse({ message: (error as Error).message });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const cookieStore = await cookies();
+
+    const body = await request.json();
+
+    const res = await api.post('/notes', body, {
+      headers: {
+        Cookie: cookieStore.toString(),
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return NextResponse.json(res.data, { status: res.status });
+  } catch (error) {
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
+      return NextResponse.json(
+        { error: error.message, response: error.response?.data },
+        { status: error.status }
+      );
+    }
+    logErrorResponse({ message: (error as Error).message });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
