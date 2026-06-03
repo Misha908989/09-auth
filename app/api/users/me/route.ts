@@ -1,8 +1,8 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
-import { api } from '../api';
-import { logErrorResponse } from '../_utils/utils';
+import { api } from '../../api';
+import { logErrorResponse } from '../../_utils/utils';
 import { cookies } from 'next/headers';
 import { isAxiosError } from 'axios';
 
