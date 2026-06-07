@@ -12,7 +12,7 @@ import Pagination from "@/components/Pagination/Pagination";
 import css from "@/app/(private routes)/notes/notes.module.css";
 
 interface NotesClientProps {
-  tag?: NoteTag;
+  tag?: string;
 }
 
 export default function NotesClient({ tag }: NotesClientProps) {

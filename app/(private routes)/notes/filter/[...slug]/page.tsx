@@ -14,7 +14,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const tag = slug?.[0] ?? "all";
+  const tag = slug?.[0] === 'all' ? undefined : slug[0];
   return {
     title: `Notes filtered by "${tag}" | NoteHub`,
     description: `Viewing notes filtered by tag: ${tag}.`,
