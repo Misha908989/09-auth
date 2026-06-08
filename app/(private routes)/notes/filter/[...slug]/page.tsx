@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function FilteredNotesPage({ params }: Props) {
   const { slug } = await params;
-  const tag = slug?.[0] as NoteTag | undefined;
+  const tag = slug?.[0] === 'all' ? undefined : slug[0];
 
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
